@@ -1,0 +1,97 @@
+
+INTERPROCESS COMMUNICATION USING FIFO
+
+WRITE
+
+#include<stdio.h>
+#include<fcntl.h>
+#include<unistd.h>
+#include<sys/stat.h>
+#include<sys/types.h>
+
+void main() {
+ int fp,i=0;
+ char arr[20],ch;
+ mkfifo("abc",0666);           //creating named file
+ fp = open("abc", O_WRONLY);
+
+ printf("\nWrite the data :");
+ ch = getchar();
+
+ while(ch != '$'){
+  arr[i]=ch;
+  i++;
+  ch = getchar();
+ }
+ arr[i]='$';
+ //fgets(arr, 20, stdin);
+ write(fp, arr, 20);
+ close(fp);
+ //close(fp);
+
+}
+
+
+READ
+
+#include<stdio.h> 
+#include<fcntl.h>
+#include<unistd.h>
+#include<sys/stat.h>
+#include<sys/types.h>
+
+void main() {
+ int fp,words=0,lines=0,characters=0,i=0;
+ char arr[20];
+ fp = open("abc", O_RDONLY);
+
+ //printf("\nData read is :");
+ read(fp, arr, 20);
+ printf("\nData read is : %s", arr);
+
+ while(arr[i] !='$'){
+  if(arr[i]=='\n'){
+    lines++;
+  }
+  else if(arr[i]==' '){
+    words++;
+  }
+  else{
+    characters++;
+  }
+  i++;
+ }
+
+ lines=lines+1;
+ FILE *fp1=fopen("ABC.TXT","w");
+ fprintf(fp1,"\n no. of words: %d",words);
+ fprintf(fp1,"\n no. of lines: %d",lines);
+ fprintf(fp1,"\n no. of characters: %d",characters);
+
+ close(fp);
+
+}
+
+
+OUTPUT
+
+
+[student@localhost ~]$ gcc wfifo.c
+[student@localhost ~]$ ./a.out
+
+Music 
+is 
+Love
+
+[student@localhost ~]$ gcc rfifo -o b.out
+[student@localhost ~]$ ./b.out
+
+ABC.txt
+
+no. of words: 3
+no. of lines: 3
+no. of characters: 11
+
+
+
+
